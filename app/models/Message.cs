@@ -1,6 +1,9 @@
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace Birdroni.Models;
 public class Message
 {
+    [BsonId]
     private Guid _id { get; }
     public string Text { get; set; }
     public User Sentby { get; set; }

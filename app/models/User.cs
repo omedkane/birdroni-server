@@ -1,7 +1,10 @@
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace Birdroni.Models;
 
 public class User
 {
+    [BsonId]
     private Guid _id { get; }
     public string Firstname { get; set; }
     public string Lastname { get; set; }
