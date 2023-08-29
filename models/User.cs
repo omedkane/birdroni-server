@@ -1,4 +1,6 @@
-class User
+namespace Birdroni.Models;
+
+public class User
 {
     private Guid _id { get; }
     public string Firstname { get; set; }

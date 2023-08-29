@@ -1,4 +1,5 @@
-class Chat
+namespace Birdroni.Models;
+public class Chat
 {
     private Guid _id { get; }
     public User[] Chatmates = new User[2];

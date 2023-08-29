@@ -1,4 +1,5 @@
-class Message
+namespace Birdroni.Models;
+public class Message
 {
     private Guid _id { get; }
     public string Text { get; set; }
