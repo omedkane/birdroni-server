@@ -3,6 +3,7 @@ using Birdroni.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
 builder.Services.Configure<BirdroniDatabaseSettings>(
     builder.Configuration.GetSection("BirdroniDatabase")
 );
@@ -10,7 +11,7 @@ builder.Services.Configure<BirdroniDatabaseSettings>(
 builder.Services.AddSingleton<UsersService>();
 
 var app = builder.Build();
-
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/", () => "hello world");
+app.MapControllers();
 
 app.Run();

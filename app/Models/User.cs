@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Birdroni.Models;
@@ -5,16 +6,20 @@ namespace Birdroni.Models;
 public class User
 {
     [BsonId]
-    private Guid _id { get; }
-    public string Firstname { get; set; }
-    public string Lastname { get; set; }
-    public string Avatar { get; set; }
+    [BsonRepresentation(MongoDB.Bson.BsonType.String)]
+    public Guid Id { get; set; } = Guid.Empty;
 
-    public User(Guid? id, string firstname, string lastname, string avatar)
-    {
-        _id = id ?? Guid.NewGuid();
-        Firstname = firstname;
-        Lastname = lastname;
-        Avatar = avatar;
-    }
+    [DataType(DataType.EmailAddress)]
+    [Required]
+    public string Email { get; set; } = null!;
+
+    [StringLength(50, MinimumLength = 2)]
+    [Required]
+    public string Firstname { get; set; } = null!;
+
+    public string Lastname { get; set; } = null!;
+
+    public string Avatar { get; set; } = null!;
+
+    public User() { }
 }

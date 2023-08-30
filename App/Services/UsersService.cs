@@ -1,5 +1,6 @@
 using Birdroni.Models;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Birdroni.Services;
@@ -14,4 +15,12 @@ public class UsersService
         var database = client.GetDatabase(dbSettings.Value.DatabaseName);
         _usersCollection = database.GetCollection<User>("users");
     }
+
+    public async Task<List<User>> GetAllAsync() =>
+        await _usersCollection.Find(_ => true).ToListAsync();
+
+    public async Task CreateAsync(User user) => await _usersCollection.InsertOneAsync(user);
+
+    public async Task<User> GetUserAsync(string email) =>
+        (await _usersCollection.FindAsync(user => user.Email == email)).SingleOrDefault();
 }
