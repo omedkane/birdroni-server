@@ -23,4 +23,11 @@ public class UsersService
 
     public async Task<User> GetUserAsync(string email) =>
         (await _usersCollection.FindAsync(user => user.Email == email)).SingleOrDefault();
+
+    public async Task<User> GetUserAsync(string email, string hashedPassword) =>
+        (
+            await _usersCollection.FindAsync(
+                user => user.Email == email && user.HashedPassword == hashedPassword
+            )
+        ).SingleOrDefault();
 }

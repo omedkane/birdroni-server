@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Birdroni.Models;
 
-public class User
+public sealed class User
 {
     [BsonId]
     [BsonRepresentation(MongoDB.Bson.BsonType.String)]
@@ -20,6 +20,8 @@ public class User
     public string Lastname { get; set; } = null!;
 
     public string Avatar { get; set; } = null!;
+
+    public string HashedPassword { get; set; } = null!;
 
     public User() { }
 }

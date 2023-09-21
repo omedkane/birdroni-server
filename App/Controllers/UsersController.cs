@@ -1,7 +1,9 @@
-using Birdroni.DTOs;
+using Birdroni.Resources;
 using Birdroni.Models;
 using Birdroni.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace Birdroni.Controllers;
 
@@ -17,34 +19,57 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<Object> Get()
+    public ActionResult<object> Get()
     {
         return new { name = "Marco" };
     }
 
-    [HttpGet]
-    public async Task<ActionResult<List<User>>> GetAll()
+    // [HttpGet]
+    // public async Task<ActionResult<List<User>>> GetAll()
+    // {
+    //     var allUsers = await _service.GetAllAsync();
+    //     return allUsers;
+    // }
+    [HttpPost("login")]
+    public ActionResult<object> Login([FromForm] LoginResource login)
     {
-        var allUsers = await _service.GetAllAsync();
-        return allUsers;
+        // var hasher = new PasswordHasher<User>();
+        // var user = await _service.GetUserAsync(login.email);
+        // var verificationResult = hasher.VerifyHashedPassword(
+        //     user,
+        //     user.HashedPassword,
+        //     login.password
+        // );
+        // var response = verificationResult;
+        return login;
+        // _service.GetUserAsync()
     }
 
     [HttpPost]
-    public async Task<ActionResult<User>> Create([FromForm] RegisterDTO reg)
+    public async Task<ActionResult<object>> Create([FromForm] RegisterResource reg)
     {
-        var existingUser = await _service.GetUserAsync(reg.Email);
+        bool val = TryValidateModel(reg);
+        if (!val)
+            return new { message = val.ToString() };
+
+        User existingUser = await _service.GetUserAsync(reg.Email);
 
         if (existingUser is not null)
             return BadRequest(new { error = "This user already exists" });
 
-        var newUser = new User
+        User newUser = new User
         {
             Id = Guid.NewGuid(),
             Email = reg.Email,
             Firstname = reg.Firstname,
             Lastname = reg.Lastname,
-            Avatar = reg.Avatar
+            Avatar = reg.Avatar,
+            HashedPassword = PwdHasher.HashPassword(reg.Password)
         };
+
+        if (!TryValidateModel(newUser))
+            return ValidationProblem();
+
         await _service.CreateAsync(newUser);
 
         return newUser;

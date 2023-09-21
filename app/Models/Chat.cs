@@ -1,7 +1,7 @@
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Birdroni.Models;
-public class Chat
+public sealed class Chat
 {
     [BsonId]
     private Guid _id { get; }
