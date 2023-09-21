@@ -9,19 +9,16 @@ public sealed class User
     [BsonRepresentation(MongoDB.Bson.BsonType.String)]
     public Guid Id { get; set; } = Guid.Empty;
 
-    [DataType(DataType.EmailAddress)]
-    [Required]
-    public string Email { get; set; } = null!;
+    public required string Email { get; set; }
 
-    [StringLength(50, MinimumLength = 2)]
-    [Required]
-    public string Firstname { get; set; } = null!;
+    public required string Firstname { get; set; }
 
-    public string Lastname { get; set; } = null!;
+    public required string Lastname { get; set; }
 
-    public string Avatar { get; set; } = null!;
+    public string? Avatar { get; set; }
 
-    public string HashedPassword { get; set; } = null!;
+    public required string HashedPassword { get; set; }
+    public required byte[] Salt { get; set; }
 
     public User() { }
 }

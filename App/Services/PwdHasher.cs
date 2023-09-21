@@ -3,9 +3,8 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 public static class PwdHasher
 {
-    public static string HashPassword(string password)
+    public static string HashPassword(string password, byte[] salt)
     {
-        byte[] salt = RandomNumberGenerator.GetBytes(128 / 8);
         string hashed = Convert.ToBase64String(
             KeyDerivation.Pbkdf2(
                 password: password,
@@ -18,9 +17,14 @@ public static class PwdHasher
         return hashed;
     }
 
-    public static bool Match(string providedPassword, string hashedPassword)
+    public static byte[] GenerateSalt()
     {
-        string hashedProvidedPassword = PwdHasher.HashPassword(providedPassword);
+        return RandomNumberGenerator.GetBytes(128 / 8);
+    }
+
+    public static bool Match(string providedPassword, byte[] salt, string hashedPassword)
+    {
+        string hashedProvidedPassword = HashPassword(providedPassword, salt);
         return hashedProvidedPassword.Equals(hashedPassword);
     }
 }

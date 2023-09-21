@@ -31,32 +31,36 @@ public class UsersController : ControllerBase
     //     return allUsers;
     // }
     [HttpPost("login")]
-    public ActionResult<object> Login([FromForm] LoginResource login)
+    public async Task<ActionResult<object>> Login([FromForm] LoginResource login)
     {
-        // var hasher = new PasswordHasher<User>();
-        // var user = await _service.GetUserAsync(login.email);
-        // var verificationResult = hasher.VerifyHashedPassword(
-        //     user,
-        //     user.HashedPassword,
-        //     login.password
-        // );
-        // var response = verificationResult;
-        return login;
-        // _service.GetUserAsync()
+        var user = await _service.GetUserAsync(login.email);
+
+        if (user is null)
+            return BadRequest(
+                new
+                {
+                    error = "This user doesn't exist, check your credentials or consider creating a new account !"
+                }
+            );
+
+        if (PwdHasher.Match(login.password, user.Salt, user.HashedPassword))
+            return new { message = "You have been successfully logged-in !" };
+        else
+            return new { message = "Wrong password or email !" };
     }
 
     [HttpPost]
     public async Task<ActionResult<object>> Create([FromForm] RegisterResource reg)
     {
-        bool val = TryValidateModel(reg);
-        if (!val)
-            return new { message = val.ToString() };
+        if (!TryValidateModel(reg))
+            return ValidationProblem();
 
         User existingUser = await _service.GetUserAsync(reg.Email);
 
         if (existingUser is not null)
             return BadRequest(new { error = "This user already exists" });
 
+        byte[] salt = PwdHasher.GenerateSalt();
         User newUser = new User
         {
             Id = Guid.NewGuid(),
@@ -64,11 +68,9 @@ public class UsersController : ControllerBase
             Firstname = reg.Firstname,
             Lastname = reg.Lastname,
             Avatar = reg.Avatar,
-            HashedPassword = PwdHasher.HashPassword(reg.Password)
+            HashedPassword = PwdHasher.HashPassword(reg.Password, salt),
+            Salt = salt
         };
-
-        if (!TryValidateModel(newUser))
-            return ValidationProblem();
 
         await _service.CreateAsync(newUser);
 
