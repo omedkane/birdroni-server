@@ -1,35 +1,26 @@
 using Birdroni.Resources;
 using Birdroni.Models;
 using Birdroni.Services;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
+using Microsoft.AspNetCore.Authorization;
+using Birdroni.Misc.Security;
 
 namespace Birdroni.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController : ControllerBase
+public class AuthController : ControllerBase
 {
     private readonly UsersService _service;
+    private readonly JWToken _jwt;
 
-    public UsersController(UsersService usersService)
+    public AuthController(UsersService usersService, JWToken jwt)
     {
         _service = usersService;
+        _jwt = jwt;
     }
 
-    [HttpGet]
-    public ActionResult<object> Get()
-    {
-        return new { name = "Marco" };
-    }
-
-    // [HttpGet]
-    // public async Task<ActionResult<List<User>>> GetAll()
-    // {
-    //     var allUsers = await _service.GetAllAsync();
-    //     return allUsers;
-    // }
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<ActionResult<object>> Login([FromForm] LoginResource login)
     {
@@ -44,7 +35,10 @@ public class UsersController : ControllerBase
             );
 
         if (PwdHasher.Match(login.password, user.Salt, user.HashedPassword))
-            return new { message = "You have been successfully logged-in !" };
+        {
+            var token = _jwt.GenerateToken(user.Id.ToString());
+            return new { token, message = "You have been successfully logged-in !" };
+        }
         else
             return new { message = "Wrong password or email !" };
     }
@@ -74,6 +68,6 @@ public class UsersController : ControllerBase
 
         await _service.CreateAsync(newUser);
 
-        return newUser;
+        return new { token = _jwt.GenerateToken(newUser.Id.ToString()) };
     }
 }
