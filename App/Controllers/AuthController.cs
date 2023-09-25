@@ -55,16 +55,17 @@ public class AuthController : ControllerBase
             return BadRequest(new { error = "This user already exists" });
 
         byte[] salt = PwdHasher.GenerateSalt();
-        User newUser = new User
-        {
-            Id = Guid.NewGuid(),
-            Email = reg.Email,
-            Firstname = reg.Firstname,
-            Lastname = reg.Lastname,
-            Avatar = reg.Avatar,
-            HashedPassword = PwdHasher.HashPassword(reg.Password, salt),
-            Salt = salt
-        };
+        User newUser =
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Email = reg.Email,
+                Firstname = reg.Firstname,
+                Lastname = reg.Lastname,
+                Avatar = reg.Avatar,
+                HashedPassword = PwdHasher.HashPassword(reg.Password, salt),
+                Salt = salt
+            };
 
         await _service.CreateAsync(newUser);
 
