@@ -1,4 +1,5 @@
 using System.Text;
+using Birdroni.Contexts;
 using Birdroni.Misc.Security;
 using Birdroni.Models;
 using Birdroni.Services;
@@ -8,8 +9,9 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<BirdroniDatabaseSettings>(
-    builder.Configuration.GetSection("BirdroniDatabase")
+    builder.Configuration.GetSection("Databases:BirdroniDatabase")
 );
+
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(
@@ -28,11 +30,10 @@ builder.Services
             }
     );
 
-
+builder.Services.AddSingleton<LocalDBContext>();
 builder.Services.AddSingleton<UsersService>();
 builder.Services.AddSingleton<JWToken>();
 builder.Services.AddControllers();
-
 
 var app = builder.Build();
 
