@@ -3,6 +3,7 @@ using System;
 using Birdroni.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace birdroni_server.Migrations
 {
     [DbContext(typeof(LocalDBContext))]
-    partial class LocalDBContextModelSnapshot : ModelSnapshot
+    [Migration("20231011132120_GuidInstead")]
+    partial class GuidInstead
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.11");

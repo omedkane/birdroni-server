@@ -49,4 +49,6 @@ public class JWToken
 
         return tokenHander.CreateEncodedJwt(tokenDescriptor);
     }
+
+    public JwtSecurityToken GetJWT(string token) => tokenHander.ReadJwtToken(token);
 }
